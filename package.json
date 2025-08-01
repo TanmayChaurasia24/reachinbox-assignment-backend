@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@elastic/elasticsearch": "^9.1.0",
     "@types/mailparser": "^3.4.6",
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",
