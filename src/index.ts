@@ -1,17 +1,17 @@
 import express from "express";
 import dotenv from "dotenv";
-
+import fetchEmails from "./routes/fetchEmails.route.ts"
 dotenv.config();
 
 const app = express();
 app.use(express.json());
 
-app.get("/health", (req, res) => {
-  res.send("server working fine!");
-});
+
 app.get("/", (req, res) => {
   res.send("server working!");
 });
+
+app.use("/api/emails", fetchEmails);
 
 
 app.listen(3000, () => {
