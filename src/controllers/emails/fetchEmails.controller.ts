@@ -1,15 +1,15 @@
 import type { Request, Response } from "express";
 import { ImapFlow } from "imapflow";
 import { simpleParser } from "mailparser";
-
+import { indexEmails } from "../../services/indexEmail.ts";
 
 const getTodayDate = (): string => {
-    const today = new Date();
-    const yyyy = today.getFullYear();
-    const mm = String(today.getMonth() + 1).padStart(2, '0');
-    const dd = String(today.getDate()).padStart(2, '0');
-    return `${yyyy}-${mm}-${dd}`;
-  };
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, "0");
+  const dd = String(today.getDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
+};
 
 // function to fetch emails from the inbox
 export const fetchEmails = async (req: Request, res: Response) => {
@@ -38,16 +38,7 @@ export const fetchEmails = async (req: Request, res: Response) => {
       since: today,
     });
 
-
     const emails: any[] = [];
-
-    // fetch latest message source
-    // client.mailbox includes information about currently selected mailbox
-    // "exists" value is also the largest sequence number available in the mailbox
-    // let message = await client.fetchOne(client.mailbox.exists, {
-    //   source: true,
-    // });
-    // console.log(message.source.toString());
 
     // list subjects for all messages
     // uid value is always included in FETCH response, envelope strings are in unicode.
@@ -58,13 +49,16 @@ export const fetchEmails = async (req: Request, res: Response) => {
     })) {
       const parsed: any = await simpleParser(message.source);
 
-      emails.push({
+      const emailData = {
         subject: message.envelope.subject,
         from: parsed.from?.text || "",
         to: parsed.to?.text || "",
         date: message.internalDate,
         // content: parsed.text || parsed.html || "",
-      });
+      };
+      await indexEmails(emailData);
+
+      emails.push(emailData);
     }
 
     // Make sure lock is released, otherwise next `getMailboxLock()` never returns
