@@ -1,21 +1,30 @@
-import type { Request, Response } from "express";
+import { json, type Request, type Response } from "express";
 import { ImapFlow } from "imapflow";
 import { simpleParser } from "mailparser";
 import { indexEmails } from "../../services/indexEmail.ts";
+import parseEmail from "email-addresses";
 
-const getTodayDate = (): string => {
-  const today = new Date();
-  const yyyy = today.getFullYear();
-  const mm = String(today.getMonth() + 1).padStart(2, "0");
-  const dd = String(today.getDate()).padStart(2, "0");
-  return `${yyyy}-${mm}-${dd}`;
+const getDateOneWeekAgo = (): string => {
+    const date = new Date();
+    date.setDate(date.getDate() - 7); // go back 7 days
+    const yyyy = date.getFullYear();
+    const mm = String(date.getMonth() + 1).padStart(2, "0");
+    const dd = String(date.getDate()).padStart(2, "0");
+    return `${yyyy}-${mm}-${dd}`;
+  };
+  
+const silentLogger = {
+  info: () => {},
+  warn: () => {},
+  error: () => {},
+  debug: () => {},
+  trace: () => {},
 };
-
-// function to fetch emails from the inbox
 export const fetchEmails = async (req: Request, res: Response) => {
-  const { email, password } = req.body;
+  const { email, password} = req.body;
 
   const client: any = new ImapFlow({
+    logger: silentLogger,
     host: "imap.gmail.com",
     port: 993,
     secure: true,
@@ -26,22 +35,16 @@ export const fetchEmails = async (req: Request, res: Response) => {
   });
 
   try {
-    // Wait until client connects and authorizes
     await client.connect();
-    // Select and lock a mailbox. Throws if mailbox does not exist
+
     let lock = await client.getMailboxLock("INBOX");
+    const today = getDateOneWeekAgo();
 
-    const today = getTodayDate();
-
-    // Search for all messages from today
-    const uids = await client.search({
-      since: today,
-    });
-
+    const uids = await client.search({ since: today });
     const emails: any[] = [];
+    console.log("uuids: ", uids);
+    
 
-    // list subjects for all messages
-    // uid value is always included in FETCH response, envelope strings are in unicode.
     for await (let message of client.fetch(uids, {
       envelope: true,
       source: true,
@@ -49,34 +52,33 @@ export const fetchEmails = async (req: Request, res: Response) => {
     })) {
       const parsed: any = await simpleParser(message.source);
 
-      const emailData = {
+      const emailData: any = {
         subject: message.envelope.subject,
         from: parsed.from?.text || "",
         to: parsed.to?.text || "",
         date: message.internalDate,
-        // content: parsed.text || parsed.html || "",
+        folder: parsed.to?.text || "",
+        account: parsed.to?.text || "",
+        content: parsed.text || "",
       };
-      await indexEmails(emailData);
 
+      await indexEmails(emailData);
       emails.push(emailData);
     }
 
-    // Make sure lock is released, otherwise next `getMailboxLock()` never returns
     lock.release();
-
-    // log out and close connection
     await client.logout();
 
     return res.status(200).json({
       title: "Success",
-      description: "Emails fetched successfully",
-      emails: emails,
+      description: `Emails fetched from "inbox"`,
+      emails,
     });
   } catch (error: any) {
     return res.status(500).json({
       title: "Internal Server Error",
-      description: "Failed to fetch the request",
-      error: error,
+      description: "Failed to fetch emails",
+      error: error.message || error,
     });
   }
 };

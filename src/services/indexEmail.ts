@@ -1,47 +1,47 @@
 // src/services/indexEmail.ts
-import { esClient } from '../lib/elasticsearch.ts';
+import { esClient } from "../lib/elasticsearch.ts";
 
 interface EmailData {
   subject: string;
   from: string;
   to: string;
+  folder: string;
+  account: string;
   date: Date;
+  content: string;
 }
 
 export const indexEmails = async (emailData: EmailData) => {
   try {
-    const indexName = 'emails';
+    const indexName = "emails";
 
     const exists = await esClient.indices.exists({ index: indexName });
-    console.log("exists: ", exists);
-    
+
     if (!exists) {
-      const temp = await esClient.indices.create({
+      await esClient.indices.create({
         index: indexName,
         body: {
-            //@ts-ignore
+          //@ts-ignore
           mappings: {
             properties: {
-              subject: { type: 'text' },
-              from: { type: 'keyword' },
-              to: { type: 'keyword' },
-              date: { type: 'date' },
+              subject: { type: "text" },
+              from: { type: "text" },
+              to: { type: "keyword" },
+              folder: { type: "keyword" },
+              account: { type: "keyword" },
+              date: { type: "date" },
+              content: {type: "text"}
             },
           },
         },
       });
-
-      console.log(temp);
-      
     }
 
     const temp2 = await esClient.index({
       index: indexName,
       document: emailData,
     });
-    console.log(temp2);
-    
   } catch (error) {
-    console.error('Failed to index email:', error);
+    console.error("Failed to index email:", error);
   }
 };
