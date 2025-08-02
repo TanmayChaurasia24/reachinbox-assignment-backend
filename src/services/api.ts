@@ -37,4 +37,7 @@ export const emailAPI = {
   getAll: async () => {
     return PublicRequest(`emails/allemails`);
   },
+  getByFolder: async (folder: string) => {
+    return PublicRequest(`emails/search?query=${folder}`);
+  },
 };

@@ -25,6 +25,7 @@ interface EmailListProps {
   onEmailSelect: (emailId: string) => void;
   onEmailClick: (email: Email) => void;
   onToggleStar: (emailId: string) => void;
+  selectedFolder: string;
 }
 
 const sampleEmails: Email[] = [];
@@ -34,6 +35,7 @@ export function EmailList({
   onEmailSelect,
   onEmailClick,
   onToggleStar,
+  selectedFolder,
 }: EmailListProps) {
   const [emails, setemails] = useState<any[]>([]);
 
@@ -42,16 +44,25 @@ export function EmailList({
   };
 
   useEffect(() => {
-    const fetchAllEmails = async () => {
-      const allemails = await emailAPI.getAll();
+    const fetchEmails = async () => {
+      try {
+        let emailsData;
+        if (selectedFolder === 'inbox' || selectedFolder === 'all') {
+          emailsData = await emailAPI.getAll();
+        } else {
+          emailsData = await emailAPI.getByFolder(selectedFolder);
+        }
 
-      console.log("all emails fetched: ", allemails);
-
-      setemails(allemails);
+        console.log(`${selectedFolder} emails fetched: `, emailsData);
+        setemails(emailsData || []);
+      } catch (error) {
+        console.error('Error fetching emails:', error);
+        setemails([]);
+      }
     };
 
-    fetchAllEmails();
-  }, []);
+    fetchEmails();
+  }, [selectedFolder]);
 
   return (
     <div className="h-full flex flex-col overflow-hidden">

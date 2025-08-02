@@ -84,6 +84,7 @@ const Index = () => {
               onEmailSelect={handleEmailSelect}
               onEmailClick={handleEmailClick}
               onToggleStar={handleToggleStar}
+              selectedFolder={selectedFolder}
             />
           </div>
 
