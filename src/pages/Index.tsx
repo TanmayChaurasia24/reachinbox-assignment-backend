@@ -74,10 +74,10 @@ const Index = () => {
 
         {/* Email List & Detail - Responsive Layout */}
         <div className="flex-1 flex overflow-hidden">
-          {/* Email List - Hidden on mobile when email is selected */}
+          {/* Email List - Full width when no email selected, half width when email selected */}
           <div className={cn(
-            "flex-1 lg:flex-none lg:w-96 xl:w-1/2 transition-all duration-300",
-            selectedEmail ? "hidden lg:block" : "block"
+            "transition-all duration-300 overflow-hidden",
+            selectedEmail ? "w-1/2" : "w-full"
           )}>
             <EmailList
               selectedEmails={selectedEmails}
@@ -87,12 +87,9 @@ const Index = () => {
             />
           </div>
 
-          {/* Email Detail - Full width on mobile, side panel on desktop */}
+          {/* Email Detail - Half width when selected */}
           {selectedEmail && (
-            <div className={cn(
-              "flex-1 lg:flex-none lg:w-96 xl:w-1/2",
-              "absolute inset-0 lg:relative lg:inset-auto z-40 lg:z-auto"
-            )}>
+            <div className="w-1/2 overflow-hidden">
               <EmailDetail
                 email={selectedEmail}
                 onClose={() => setSelectedEmail(null)}

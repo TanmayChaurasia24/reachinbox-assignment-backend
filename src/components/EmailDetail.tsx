@@ -38,7 +38,7 @@ export function EmailDetail({ email, onClose }: any) {
   const fullEmailContent = email.Content
 
   return (
-    <div className="w-full lg:w-96 h-screen bg-card border-l border-border flex flex-col">
+    <div className="w-full h-full bg-card border-l border-border flex flex-col">
       {/* Header */}
       <div className="p-4 border-b border-border">
         <div className="flex items-center justify-between mb-3">

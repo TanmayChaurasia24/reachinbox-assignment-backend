@@ -54,8 +54,8 @@ export function EmailList({
   }, []);
 
   return (
-    <div className="flex-1 overflow-hidden">
-      <div className="h-full overflow-y-auto">
+    <div className="h-full flex flex-col overflow-hidden">
+      <div className="flex-1 overflow-y-auto">
         {emails.map((email) => {
           const isSelected = selectedEmails.includes(email.id);
 
