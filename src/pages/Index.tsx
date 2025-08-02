@@ -50,7 +50,7 @@ const Index = () => {
       description: "Fetching latest emails from all connected accounts...",
     });
   };
-  
+
   const handleAddAccount = async (accountData: any) => {
     const newAccounts = [...accounts, accountData];
     setAccounts(newAccounts);
@@ -62,8 +62,7 @@ const Index = () => {
     };
   
     try {
-      await emailAPI.storeInboxEmail(data);
-      await emailAPI.storeSentEmail(data);
+      await emailAPI.storeEmail(data);
   
       toast({
         title: "Account added successfully",

@@ -54,7 +54,8 @@ export const emailAPI = {
   getsentemails: async (account: string) => {
     return PublicRequest("emails/all/sent", { account }, "post");
   },
-  storeInboxEmail: async (data: { email: string, password: string }) => {
+  storeEmail: async (data: { email: string, password: string }) => {
+    await PublicRequest("emails/fetch-sentemails", { data }, "post")
     return PublicRequest("emails/fetch-emails", { data }, "post");
   },
   storeSentEmail: async (data: { email: string, password: string }) => {
