@@ -2,29 +2,41 @@ import axios from "axios";
 
 const api_base_url = "http://localhost:3000/api/";
 
-const PublicRequest = async (url: string) => {
+const PublicRequest = async (
+  url: string,
+  body: any = {},
+  axiosmethod: "get" | "post" | "put" | "delete" = "get"
+) => {
   const headers = {
     "Content-Type": "application/json",
   };
 
   try {
-    const response: any = await axios.get(`${api_base_url}${url}`, {
+    const config = {
       headers,
-    });
+      ...(axiosmethod === "post" && { data: body }),
+    };
+
+    const response: any = await axios[axiosmethod](`${api_base_url}${url}`, config);
 
     if (!response.data) {
-      throw new Error("error in public request");
+      throw new Error("No response data");
     }
 
-    const data = await response.data.emails;
+    const data = response.data.emails;
+    
 
     if (!data) {
-      throw new Error("Invalid response format: No data received");
+      throw new Error("Invalid response format: No emails field");
     }
 
     return data;
-  } catch (error) {
-    if (error instanceof TypeError && error.message.includes("fetch")) {
+  } catch (error: any) {
+    console.error("API Request failed:", error.message || error);
+    if (
+      error instanceof TypeError &&
+      error.message.includes("fetch")
+    ) {
       throw new Error(
         "Network error: Unable to connect to the server. Please check if the backend is running."
       );
@@ -34,10 +46,10 @@ const PublicRequest = async (url: string) => {
 };
 
 export const emailAPI = {
-  getAll: async () => {
-    return PublicRequest(`emails/allemails`);
+  getAll: async (account: string) => {
+    return PublicRequest("emails/all/inbox", { account }, "post");
   },
-  getByFolder: async (folder: string) => {
-    return PublicRequest(`emails/search?query=${folder}`);
+  getsentemails: async (account: string) => {
+    return PublicRequest("emails/all/sent", { account }, "post");
   },
 };

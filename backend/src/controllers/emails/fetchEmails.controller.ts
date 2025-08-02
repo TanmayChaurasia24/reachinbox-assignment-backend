@@ -2,6 +2,7 @@ import { type Request, type Response } from "express";
 import { ImapFlow } from "imapflow";
 import { simpleParser } from "mailparser";
 import { indexEmails } from "../../services/indexEmail.ts";
+import { esClient } from "../../lib/elasticsearch.ts";
 
 const getDateOneWeekAgo = (): string => {
     const date = new Date();
@@ -83,3 +84,41 @@ export const fetchEmails = async (req: Request, res: Response) => {
     });
   }
 };
+
+export const getInboxEmails = async (req: Request, res: Response) => {
+  const { account }: any = req.query; // e.g., user@gmail.com
+
+  try {
+    const result = await esClient.search({
+      index: 'emails', 
+      scroll: "1m",
+      size: 1000, // number of emails to return
+      body: {
+        query: {
+          bool: {
+            must: [
+              { match: { folder: 'inbox' } },
+              ...(account ? [{ match: { account } }] : []),
+            ],
+          },
+        },
+        sort: [{ date: { order: 'desc' } }],
+      },
+    });
+
+    const emails = result.hits.hits.map((hit: any) => hit._source);
+
+    res.status(200).json({
+      title: 'Success',
+      description: 'Inbox emails fetched from database',
+      emails,
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      title: 'Internal Server Error',
+      description: 'Failed to fetch inbox emails',
+      error: error.message || error,
+    });
+  }
+};
+

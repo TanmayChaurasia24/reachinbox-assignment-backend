@@ -48,9 +48,9 @@ export function EmailList({
       try {
         let emailsData;
         if (selectedFolder === 'inbox' || selectedFolder === 'all') {
-          emailsData = await emailAPI.getAll();
-        } else {
-          emailsData = await emailAPI.getByFolder(selectedFolder);
+          emailsData = await emailAPI.getAll("kuamrchaurasiatanmay@gmail.com");
+        } else if(selectedFolder === 'sent') {
+          emailsData = await emailAPI.getsentemails("kuamrchaurasiatanmay@gmail.com");
         }
 
         console.log(`${selectedFolder} emails fetched: `, emailsData);
