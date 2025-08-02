@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import fetchEmails from "./routes/fetchEmails.route.ts";
 import filterEmail from "./routes/filterEmailsAi.route.ts"
+import notifymails from "./routes/slackNotify.route.ts"
 import cors from "cors";
 dotenv.config();
 
@@ -20,6 +21,7 @@ app.get("/", (req, res) => {
 
 app.use("/api/emails", fetchEmails);
 app.use("/api/ai", filterEmail);
+app.use("/api/slack", notifymails);
 
 app.listen(3000, () => {
   console.log("Server is running on port 3000");

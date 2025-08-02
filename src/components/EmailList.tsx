@@ -52,6 +52,8 @@ export function EmailList({
           emailsData = await emailAPI.getAll(temp[0]);
         } else if(selectedFolder === 'sent') {
           emailsData = await emailAPI.getsentemails(temp[0]);
+        } else if(selectedFolder === 'intrested') {
+          emailsData = await emailAPI.getintrestedemails(temp[0]);
         }
 
         console.log(`${selectedFolder} emails fetched: `, emailsData);

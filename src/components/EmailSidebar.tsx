@@ -13,6 +13,7 @@ interface EmailSidebarProps {
 const folders = [
   { id: "inbox", label: "Inbox", icon: Inbox, count: 12 },
   { id: "sent", label: "Sent", icon: Send, count: 45 },
+  { id: "intrested", label: "Intrested Emails", icon: Send, count: 3 },
 ];
 
 export function EmailSidebar({

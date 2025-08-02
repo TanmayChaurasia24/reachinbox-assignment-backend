@@ -20,6 +20,9 @@ const PublicRequest = async (
       response = await axios[axiosmethod](`${api_base_url}${url}`, body, { headers });
     }
 
+    console.log("response backend is: ", response);
+    
+
     if (!response.data) {
       throw new Error("No response data");
     }
@@ -57,4 +60,7 @@ export const emailAPI = {
   storeSentEmail: async (data: { email: string, password: string }) => {
     return PublicRequest("emails/fetch-sentemails", { data }, "post");
   },
+  getintrestedemails: async (account: string) => {
+    return PublicRequest("slack/notify", {account}, "post")
+  }
 };

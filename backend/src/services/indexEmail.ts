@@ -10,6 +10,7 @@ interface EmailData {
   account: string;
   date: Date;
   content: string;
+  category: string;
 }
 
 export const indexEmails = async (emailData: EmailData) => {
@@ -32,7 +33,8 @@ export const indexEmails = async (emailData: EmailData) => {
               folder: { type: "keyword" },
               account: { type: "keyword" },
               date: { type: "date" },
-              content: {type: "text"}
+              content: {type: "text"},
+              category: {type: "keyword"}
             },
           },
         },
