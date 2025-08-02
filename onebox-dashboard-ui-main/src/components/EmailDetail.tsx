@@ -55,11 +55,11 @@ Best regards,
 ${email.sender}`;
 
   return (
-    <div className="w-96 h-screen bg-card border-l border-border flex flex-col">
+    <div className="w-full lg:w-96 h-screen bg-card border-l border-border flex flex-col">
       {/* Header */}
       <div className="p-4 border-b border-border">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-lg font-semibold text-foreground">Email Details</h2>
+          <h2 className="text-base lg:text-lg font-semibold text-foreground">Email Details</h2>
           <Button variant="ghost" size="sm" onClick={onClose}>
             <X className="w-4 h-4" />
           </Button>

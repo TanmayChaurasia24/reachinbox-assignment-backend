@@ -29,14 +29,14 @@ const folders = [
 
 export function EmailSidebar({ selectedFolder, onFolderSelect, onAddAccount }: EmailSidebarProps) {
   return (
-    <div className="w-64 h-screen bg-card border-r border-border flex flex-col">
+    <div className="w-64 lg:w-72 h-screen bg-card border-r border-border flex flex-col">
       {/* Header */}
-      <div className="p-6 border-b border-border">
+      <div className="p-4 lg:p-6 border-b border-border">
         <div className="flex items-center gap-3 mb-4">
           <div className="w-8 h-8 bg-gradient-to-br from-primary to-accent rounded-lg flex items-center justify-center">
             <Mail className="w-4 h-4 text-white" />
           </div>
-          <h1 className="text-xl font-semibold text-foreground">Onebox</h1>
+          <h1 className="text-lg lg:text-xl font-semibold text-foreground">Onebox</h1>
         </div>
         
         <Button 

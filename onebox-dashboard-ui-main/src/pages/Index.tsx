@@ -5,6 +5,7 @@ import { EmailList } from "@/components/EmailList";
 import { EmailDetail } from "@/components/EmailDetail";
 import { AddAccountModal } from "@/components/AddAccountModal";
 import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 
 const Index = () => {
   const { toast } = useToast();
@@ -49,15 +50,20 @@ const Index = () => {
 
   return (
     <div className="h-screen bg-background flex overflow-hidden">
-      {/* Sidebar */}
-      <EmailSidebar
-        selectedFolder={selectedFolder}
-        onFolderSelect={setSelectedFolder}
-        onAddAccount={() => setIsAddAccountModalOpen(true)}
-      />
+      {/* Mobile/Tablet: Hidden sidebar, show toggle */}
+      <div className={cn(
+        "fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0",
+        selectedEmail ? "-translate-x-full lg:translate-x-0" : "translate-x-0"
+      )}>
+        <EmailSidebar
+          selectedFolder={selectedFolder}
+          onFolderSelect={setSelectedFolder}
+          onAddAccount={() => setIsAddAccountModalOpen(true)}
+        />
+      </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col min-w-0">
         {/* Header */}
         <EmailHeader
           searchQuery={searchQuery}
@@ -66,21 +72,32 @@ const Index = () => {
           onRefresh={handleRefresh}
         />
 
-        {/* Email List */}
+        {/* Email List & Detail - Responsive Layout */}
         <div className="flex-1 flex overflow-hidden">
-          <EmailList
-            selectedEmails={selectedEmails}
-            onEmailSelect={handleEmailSelect}
-            onEmailClick={handleEmailClick}
-            onToggleStar={handleToggleStar}
-          />
-
-          {/* Email Detail (conditionally rendered) */}
-          {selectedEmail && (
-            <EmailDetail
-              email={selectedEmail}
-              onClose={() => setSelectedEmail(null)}
+          {/* Email List - Hidden on mobile when email is selected */}
+          <div className={cn(
+            "flex-1 lg:flex-none lg:w-96 xl:w-1/2 transition-all duration-300",
+            selectedEmail ? "hidden lg:block" : "block"
+          )}>
+            <EmailList
+              selectedEmails={selectedEmails}
+              onEmailSelect={handleEmailSelect}
+              onEmailClick={handleEmailClick}
+              onToggleStar={handleToggleStar}
             />
+          </div>
+
+          {/* Email Detail - Full width on mobile, side panel on desktop */}
+          {selectedEmail && (
+            <div className={cn(
+              "flex-1 lg:flex-none lg:w-96 xl:w-1/2",
+              "absolute inset-0 lg:relative lg:inset-auto z-40 lg:z-auto"
+            )}>
+              <EmailDetail
+                email={selectedEmail}
+                onClose={() => setSelectedEmail(null)}
+              />
+            </div>
           )}
         </div>
       </div>
