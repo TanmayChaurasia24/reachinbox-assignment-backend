@@ -28,8 +28,6 @@ interface EmailListProps {
   selectedFolder: string;
 }
 
-const sampleEmails: Email[] = [];
-
 export function EmailList({
   selectedEmails,
   onEmailSelect,
@@ -46,11 +44,14 @@ export function EmailList({
   useEffect(() => {
     const fetchEmails = async () => {
       try {
+        const temp = JSON.parse(localStorage.getItem('currentGmailAccount'));
+        console.log("temp value is: ", temp);
+        
         let emailsData;
         if (selectedFolder === 'inbox' || selectedFolder === 'all') {
-          emailsData = await emailAPI.getAll("kuamrchaurasiatanmay@gmail.com");
+          emailsData = await emailAPI.getAll(temp[0]);
         } else if(selectedFolder === 'sent') {
-          emailsData = await emailAPI.getsentemails("kuamrchaurasiatanmay@gmail.com");
+          emailsData = await emailAPI.getsentemails(temp[0]);
         }
 
         console.log(`${selectedFolder} emails fetched: `, emailsData);

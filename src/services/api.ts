@@ -12,20 +12,19 @@ const PublicRequest = async (
   };
 
   try {
-    const config = {
-      headers,
-      ...(axiosmethod === "post" && { data: body }),
-    };
+    let response;
 
-    const response: any = await axios[axiosmethod](`${api_base_url}${url}`, config);
+    if (axiosmethod === "get") {
+      response = await axios.get(`${api_base_url}${url}`, { headers });
+    } else {
+      response = await axios[axiosmethod](`${api_base_url}${url}`, body, { headers });
+    }
 
     if (!response.data) {
       throw new Error("No response data");
     }
 
     const data = response.data.emails;
-    
-
     if (!data) {
       throw new Error("Invalid response format: No emails field");
     }
@@ -51,5 +50,11 @@ export const emailAPI = {
   },
   getsentemails: async (account: string) => {
     return PublicRequest("emails/all/sent", { account }, "post");
+  },
+  storeInboxEmail: async (data: { email: string, password: string }) => {
+    return PublicRequest("emails/fetch-emails", { data }, "post");
+  },
+  storeSentEmail: async (data: { email: string, password: string }) => {
+    return PublicRequest("emails/fetch-sentemails", { data }, "post");
   },
 };

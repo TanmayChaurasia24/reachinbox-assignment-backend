@@ -6,6 +6,7 @@ import { EmailDetail } from "@/components/EmailDetail";
 import { AddAccountModal } from "@/components/AddAccountModal";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { emailAPI } from "@/services/api";
 
 const Index = () => {
   const { toast } = useToast();
@@ -49,17 +50,33 @@ const Index = () => {
       description: "Fetching latest emails from all connected accounts...",
     });
   };
-
-  const handleAddAccount = (accountData: any) => {
+  
+  const handleAddAccount = async (accountData: any) => {
     const newAccounts = [...accounts, accountData];
     setAccounts(newAccounts);
     localStorage.setItem('gmailAccounts', JSON.stringify(newAccounts));
-    
-    toast({
-      title: "Account added successfully",
-      description: `Connected to ${accountData.email}`,
-    });
+  
+    const data = {
+      email: accountData.email,
+      password: accountData.password,
+    };
+  
+    try {
+      await emailAPI.storeInboxEmail(data);
+      await emailAPI.storeSentEmail(data);
+  
+      toast({
+        title: "Account added successfully",
+        description: `Connected to ${accountData.email}`,
+      });
+    } catch (err: any) {
+      toast({
+        title: "Error adding account",
+        description: err.message || "Unknown error",
+      });
+    }
   };
+  
 
   return (
     <div className="h-screen bg-background flex overflow-hidden">

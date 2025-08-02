@@ -21,7 +21,7 @@ const silentLogger = {
   trace: () => {},
 };
 export const fetchEmails = async (req: Request, res: Response) => {
-  const { email, password} = req.body;
+  const { email, password} = req.body.data;
 
   const client: any = new ImapFlow({
     logger: silentLogger,

@@ -2,15 +2,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { 
-  Search, 
-  Filter, 
+import {
+  Search,
+  Filter,
   Calendar,
   Circle,
   RefreshCw,
   Archive,
-  Trash2
+  Trash2,
+  Delete,
 } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 
 interface EmailHeaderProps {
   searchQuery: string;
@@ -19,14 +21,25 @@ interface EmailHeaderProps {
   onRefresh: () => void;
 }
 
-export function EmailHeader({ 
-  searchQuery, 
-  onSearchChange, 
+export function EmailHeader({
+  searchQuery,
+  onSearchChange,
   selectedEmails,
-  onRefresh 
+  onRefresh,
 }: EmailHeaderProps) {
   const connectedAccounts = 2;
   const isSyncing = true;
+
+  const handleremoveaccounts = async () => {
+    await localStorage.removeItem('gmailAccounts');
+    await localStorage.removeItem('currentGmailAccount');
+    window.location.reload();
+    toast({
+      title: "All accounts removed"
+    });
+
+    return;
+  }
 
   return (
     <div className="h-14 lg:h-16 border-b border-border bg-background px-4 lg:px-6 flex items-center justify-between">
@@ -58,12 +71,9 @@ export function EmailHeader({
               <Filter className="w-4 h-4 mr-2" />
               All Accounts
             </Button>
-            <Button variant="filter" className="hidden lg:flex">
-              <Calendar className="w-4 h-4 mr-2" />
-              Last 7 days
-            </Button>
-            <Button variant="filter" size="sm" className="sm:hidden">
-              <Filter className="w-4 h-4" />
+            <Button variant="filter" className="hidden sm:flex" onClick={handleremoveaccounts}>
+              <Delete className="w-4 h-4 mr-2" />
+              Remove all accounts
             </Button>
           </>
         )}
@@ -80,36 +90,6 @@ export function EmailHeader({
             onChange={(e) => onSearchChange(e.target.value)}
             className="pl-10 bg-background border-border text-sm"
           />
-        </div>
-
-        {/* Status */}
-        <div className="flex items-center gap-2 lg:gap-3">
-          <Button 
-            variant="ghost" 
-            size="sm"
-            onClick={onRefresh}
-            className="px-2"
-          >
-            <RefreshCw className={cn(
-              "w-4 h-4",
-              isSyncing && "animate-spin"
-            )} />
-          </Button>
-          
-          <div className="hidden lg:flex items-center gap-2 text-sm text-muted-foreground">
-            <Circle className={cn(
-              "w-2 h-2 fill-current",
-              isSyncing ? "text-success" : "text-muted-foreground"
-            )} />
-            <span>Connected accounts: {connectedAccounts}</span>
-          </div>
-          
-          <div className="lg:hidden">
-            <Circle className={cn(
-              "w-2 h-2 fill-current",
-              isSyncing ? "text-success" : "text-muted-foreground"
-            )} />
-          </div>
         </div>
       </div>
     </div>

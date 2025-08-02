@@ -1,12 +1,7 @@
 import { Button } from "@/components/ui/button";
+import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
-import { 
-  Inbox, 
-  Send, 
-  Plus,
-  Settings,
-  Mail
-} from "lucide-react";
+import { Inbox, Send, Plus, Settings, Mail } from "lucide-react";
 
 interface EmailSidebarProps {
   selectedFolder: string;
@@ -20,7 +15,24 @@ const folders = [
   { id: "sent", label: "Sent", icon: Send, count: 45 },
 ];
 
-export function EmailSidebar({ selectedFolder, onFolderSelect, onAddAccount, accounts }: EmailSidebarProps) {
+export function EmailSidebar({
+  selectedFolder,
+  onFolderSelect,
+  onAddAccount,
+  accounts,
+}: EmailSidebarProps) {
+  const handleSwitchAccounts = (account: any) => {
+    if(localStorage.getItem('currentGmailAccount')) {
+      localStorage.removeItem('currentGmailAccount');
+    }
+    localStorage.setItem('currentGmailAccount', JSON.stringify([account.email, account.password]));
+    window.location.reload();
+    toast({
+      title: account.email,
+      description: `switched to ${account.email}`
+    })
+  };
+
   return (
     <div className="w-64 lg:w-72 h-screen bg-card border-r border-border flex flex-col">
       {/* Header */}
@@ -29,10 +41,12 @@ export function EmailSidebar({ selectedFolder, onFolderSelect, onAddAccount, acc
           <div className="w-8 h-8 bg-gradient-to-br from-primary to-accent rounded-lg flex items-center justify-center">
             <Mail className="w-4 h-4 text-white" />
           </div>
-          <h1 className="text-lg lg:text-xl font-semibold text-foreground">Onebox</h1>
+          <h1 className="text-lg lg:text-xl font-semibold text-foreground">
+            Onebox
+          </h1>
         </div>
-        
-        <Button 
+
+        <Button
           onClick={onAddAccount}
           className="w-full"
           variant="outline"
@@ -46,10 +60,14 @@ export function EmailSidebar({ selectedFolder, onFolderSelect, onAddAccount, acc
       {/* Accounts */}
       {accounts.length > 0 && (
         <div className="p-4 border-b border-border">
-          <h3 className="text-sm font-medium text-muted-foreground mb-2">Accounts</h3>
+          <h3 className="text-sm font-medium mb-2">Accounts</h3>
           <div className="space-y-1">
             {accounts.map((account, index) => (
-              <div key={index} className="text-xs text-muted-foreground px-3 py-1 rounded bg-muted/50">
+              <div
+                key={index}
+                className="text-xs px-3 py-1 rounded hover:bg-gray-100 cursor-pointer"
+                onClick={() => handleSwitchAccounts(account)}
+              >
                 {account.email}
               </div>
             ))}
@@ -63,7 +81,7 @@ export function EmailSidebar({ selectedFolder, onFolderSelect, onAddAccount, acc
           {folders.map((folder) => {
             const Icon = folder.icon;
             const isSelected = selectedFolder === folder.id;
-            
+
             return (
               <Button
                 key={folder.id}
@@ -79,12 +97,14 @@ export function EmailSidebar({ selectedFolder, onFolderSelect, onAddAccount, acc
                   <span className="text-sm">{folder.label}</span>
                 </div>
                 {folder.count > 0 && (
-                  <span className={cn(
-                    "text-xs px-2 py-0.5 rounded-full",
-                    isSelected 
-                      ? "bg-primary text-primary-foreground" 
-                      : "bg-muted text-muted-foreground"
-                  )}>
+                  <span
+                    className={cn(
+                      "text-xs px-2 py-0.5 rounded-full",
+                      isSelected
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-muted text-muted-foreground"
+                    )}
+                  >
                     {folder.count}
                   </span>
                 )}
