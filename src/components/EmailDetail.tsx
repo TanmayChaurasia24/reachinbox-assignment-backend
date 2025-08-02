@@ -30,12 +30,12 @@ interface Email {
 }
 
 interface EmailDetailProps {
-  email: Email;
+  email: any;
   onClose: () => void;
 }
 
-export function EmailDetail({ email, onClose }: any) {
-  const fullEmailContent = email.Content
+export function EmailDetail({ email, onClose }: EmailDetailProps) {
+  const fullEmailContent = email.content
 
   return (
     <div className="w-full h-full bg-card border-l border-border flex flex-col">

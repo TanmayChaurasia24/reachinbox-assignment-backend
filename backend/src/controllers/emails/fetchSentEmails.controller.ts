@@ -1,4 +1,4 @@
-import { type Request, type Response } from "express";
+import { json, type Request, type Response } from "express";
 import { ImapFlow } from "imapflow";
 import { simpleParser } from "mailparser";
 import { indexEmails } from "../../services/indexEmail.ts";
@@ -19,7 +19,7 @@ const silentLogger = {
   debug: () => {},
   trace: () => {},
 };
-export const fetchEmails = async (req: Request, res: Response) => {
+export const fetchSentEmails = async (req: Request, res: Response) => {
   const { email, password} = req.body;
 
   const client: any = new ImapFlow({
@@ -36,7 +36,7 @@ export const fetchEmails = async (req: Request, res: Response) => {
   try {
     await client.connect();
 
-    let lock = await client.getMailboxLock("INBOX");
+    let lock = await client.getMailboxLock("[Gmail]/Sent Mail");
     const today = getDateOneWeekAgo();
 
     const uids = await client.search({ since: today });
@@ -52,19 +52,19 @@ export const fetchEmails = async (req: Request, res: Response) => {
       const parsed: any = await simpleParser(message.source);
       const from = parsed.from?.value?.[0];
 
-      const emailData: any = {
+      const sentemailData: any = {
         subject: message.envelope.subject,
-        form_name: from.name,
-        form_email: from.addresses,
+        from_name: email,
+        from_email: email,
         to: parsed.to?.text || "",
         date: message.internalDate,
-        folder: "inbox",
+        folder: "sent",
         account: email,
         content: parsed.text || "",
       };
 
-      await indexEmails(emailData);
-      emails.push(emailData);
+      await indexEmails(sentemailData);
+      emails.push(sentemailData);
     }
 
     lock.release();
@@ -72,13 +72,13 @@ export const fetchEmails = async (req: Request, res: Response) => {
 
     return res.status(200).json({
       title: "Success",
-      description: `Emails fetched from "inbox"`,
+      description: `Emails fetched from sent`,
       emails,
     });
   } catch (error: any) {
     return res.status(500).json({
       title: "Internal Server Error",
-      description: "Failed to fetch emails",
+      description: "Failed to fetch emails from sent",
       error: error.message || error,
     });
   }

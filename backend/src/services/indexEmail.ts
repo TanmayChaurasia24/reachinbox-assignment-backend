@@ -3,7 +3,8 @@ import { esClient } from "../lib/elasticsearch.ts";
 
 interface EmailData {
   subject: string;
-  from: string;
+  from_name: string,
+  from_email: string,
   to: string;
   folder: string;
   account: string;
@@ -25,7 +26,8 @@ export const indexEmails = async (emailData: EmailData) => {
           mappings: {
             properties: {
               subject: { type: "text" },
-              from: { type: "text" },
+              from_name: { type: "text" },
+              from_email: { type: "keyword" },
               to: { type: "keyword" },
               folder: { type: "keyword" },
               account: { type: "keyword" },
