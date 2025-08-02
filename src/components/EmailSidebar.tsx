@@ -3,10 +3,6 @@ import { cn } from "@/lib/utils";
 import { 
   Inbox, 
   Send, 
-  Trash2, 
-  Archive, 
-  Star, 
-  AlertTriangle,
   Plus,
   Settings,
   Mail
@@ -16,18 +12,15 @@ interface EmailSidebarProps {
   selectedFolder: string;
   onFolderSelect: (folder: string) => void;
   onAddAccount: () => void;
+  accounts: Array<{ email: string; password: string }>;
 }
 
 const folders = [
   { id: "inbox", label: "Inbox", icon: Inbox, count: 12 },
   { id: "sent", label: "Sent", icon: Send, count: 45 },
-  { id: "starred", label: "Starred", icon: Star, count: 3 },
-  { id: "spam", label: "Spam", icon: AlertTriangle, count: 2 },
-  { id: "archive", label: "Archive", icon: Archive, count: 128 },
-  { id: "trash", label: "Trash", icon: Trash2, count: 7 },
 ];
 
-export function EmailSidebar({ selectedFolder, onFolderSelect, onAddAccount }: EmailSidebarProps) {
+export function EmailSidebar({ selectedFolder, onFolderSelect, onAddAccount, accounts }: EmailSidebarProps) {
   return (
     <div className="w-64 lg:w-72 h-screen bg-card border-r border-border flex flex-col">
       {/* Header */}
@@ -49,6 +42,20 @@ export function EmailSidebar({ selectedFolder, onFolderSelect, onAddAccount }: E
           Add Account
         </Button>
       </div>
+
+      {/* Accounts */}
+      {accounts.length > 0 && (
+        <div className="p-4 border-b border-border">
+          <h3 className="text-sm font-medium text-muted-foreground mb-2">Accounts</h3>
+          <div className="space-y-1">
+            {accounts.map((account, index) => (
+              <div key={index} className="text-xs text-muted-foreground px-3 py-1 rounded bg-muted/50">
+                {account.email}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Folders */}
       <div className="flex-1 p-4">

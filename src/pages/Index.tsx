@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { EmailSidebar } from "@/components/EmailSidebar";
 import { EmailHeader } from "@/components/EmailHeader";
 import { EmailList } from "@/components/EmailList";
@@ -14,6 +14,15 @@ const Index = () => {
   const [selectedEmails, setSelectedEmails] = useState<string[]>([]);
   const [selectedEmail, setSelectedEmail] = useState<any>(null);
   const [isAddAccountModalOpen, setIsAddAccountModalOpen] = useState(false);
+  const [accounts, setAccounts] = useState<Array<{ email: string; password: string }>>([]);
+
+  // Load accounts from localStorage on component mount
+  useEffect(() => {
+    const savedAccounts = localStorage.getItem('gmailAccounts');
+    if (savedAccounts) {
+      setAccounts(JSON.parse(savedAccounts));
+    }
+  }, []);
 
   const handleEmailSelect = (emailId: string) => {
     setSelectedEmails(prev => 
@@ -42,6 +51,10 @@ const Index = () => {
   };
 
   const handleAddAccount = (accountData: any) => {
+    const newAccounts = [...accounts, accountData];
+    setAccounts(newAccounts);
+    localStorage.setItem('gmailAccounts', JSON.stringify(newAccounts));
+    
     toast({
       title: "Account added successfully",
       description: `Connected to ${accountData.email}`,
@@ -59,6 +72,7 @@ const Index = () => {
           selectedFolder={selectedFolder}
           onFolderSelect={setSelectedFolder}
           onAddAccount={() => setIsAddAccountModalOpen(true)}
+          accounts={accounts}
         />
       </div>
 
